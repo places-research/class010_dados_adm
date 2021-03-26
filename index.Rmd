@@ -1,0 +1,232 @@
+---
+title: "Mineração de dados"
+subtitle: "Encontro síncrono 10"
+author: 
+  - <br></br>Renata Oliveira
+date: '26/03/21'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["xaringan-themer.css", "slides.css"]
+    nature:
+      ratio: "16:9"
+      highlightLines: true
+      highlightStyle: solarized-light
+      countIncrementalSlides: false
+      slideNumberFormat: |
+         <div class="progress-bar-container">
+           <div class="progress-bar" style="width: calc(%current% / %total% * 100%);">
+           </div>
+         </div>
+
+---
+
+```{r child = "setup.Rmd"}
+```
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(openintro)
+library(kableExtra)
+library(knitr)
+library(gmodels)
+library(factoextra)
+library(FactoMineR)
+library(ggplot2)
+library(ggcorrplot)
+library(psych)
+library(tidyverse)
+library(outliers)
+library(hrbrthemes)
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(viridis)
+library(hrbrthemes)
+library(knitr)
+library(kableExtra)
+loans_full_schema <- loans_full_schema %>%
+  mutate(grade = factor(grade, ordered = TRUE))
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+```{r xaringan-editable, echo=FALSE}
+xaringanExtra::use_editable(expires = 1)
+```
+
+```{r xaringan-panelset, echo=FALSE, message=FALSE, warning=FALSE}
+xaringanExtra::use_panelset()
+xaringanExtra::style_panelset_tabs(panel_tab_font_family = "sans-serif")
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+```
+
+```{r xaringan-fit-screen, echo=FALSE}
+xaringanExtra::use_fit_screen()
+```
+
+```{r xaringan-extra-styles, echo=FALSE}
+xaringanExtra::use_extra_styles(
+  hover_code_line = TRUE,         #<<
+  mute_unhighlighted_code = TRUE  #<<
+)
+```
+
+```{css include=FALSE}
+.panelset {
+   --panel-tab-foreground: currentColor;
+   --panel-tab-background: unset;
+   --panel-tab-active-foreground: currentColor;
+   --panel-tab-active-background: unset;
+   --panel-tab-active-border-color: currentColor;
+   --panel-tab-hover-foreground: currentColor;
+   --panel-tab-hover-background: unset;
+   --panel-tab-hover-border-color: currentColor;
+   --panel-tab-inactive-opacity: 0.5;
+   --panel-tabs-border-bottom: #ddd;
+   --panel-tab-font-family: Sen;
+   --panel-tab-background-color-active: #fffbe0;
+   --panel-tab-border-color-active: #023d4d;
+}
+
+.panelset .panel-tabs .panel-tab > a {
+	color: #023d4d;
+}
+
+.panelset .panel-tabs {
+  font-size: 0.5rem;
+}
+```
+
+
+## Grupos de trabalho:
+
+.small[
+Aline Paula de Oliveira, Ana Carolina Azevedo, Letycia Cabral   
+Como os atributos sociais e econômicas dos países influenciam na transmissão e tratamento da Covid-19?
+
+Rafael Carvalho Andrade, Rafael Caus, Wallace Domiciano   
+Performance de um grupo de alunos esta relacionada a fatores como: formação academica dos pais, preparação para o teste, nivél de alimentação e etc.
+
+Vitória Barbosa, Armstrong Ferreira, Gustavo Oliveira e João Rezende.   
+Associar a quantidade de acidentes por grandes áreas do CNAE e como estes se relacionam com a quantidade de mão de obra empregada nesta atividade, visando apontar quais áreas apresentaram o maior risco para a realização de atividades laborais no Brasil em 2018.
+
+Paulo Roberto, Maria Luiza, Vinicius Schneider, Izabella Cunha    
+Progressão da vacinação contra o COVID-19 ao longo de todo mundo
+
+Ana Paula Reis, Leonardo Caires e Valéria Gomes   
+Vinícolas no Brasil: vale a pena investir?
+]
+
+---
+
+## Planejamento da disciplina
+
+.pull-left[
+### Discussões
+- Trabalhando com múltiplos dataframes
+- Mineração de dados  ?????? 
+    - Análise de cluster
+    - PCA
+    - Análise de texto
+- Ética na análise de dados
+]
+
+.pull-right[
+### Atividades
+26/03
+
+02/04
+
+09/04 - Apresentações
+
+]
+
+---
+
+
+class: center, middle
+
+
+## Retrospecto
+
+---
+
+## Modelo conceitual da análise de dados
+
+![Modelo de Data Science](https://retaoliveira.github.io/relements/figures/dataR.png)
+
+---
+
+# Mineração de dados
+
+Data mining, ou mineração de dados, é a prática de examinar dados que já foram coletados – utilizando diversos tipos de algoritmos, normalmente de forma automática –, a fim de gerar novas informações e encontrar padrões.
+
+Consiste na habilidade de **identificar**, nos dados, os **padrões válidos, novos, potencialmente úteis e compreensíveis**, envolvendo **métodos estatísticos**, **ferramentas de visualização** e **técnicas de inteligência artificial**.
+
+---
+
+# Mineração de dados
+
+Considerando que minerar dados é um processo de transformar dados em informações úteis (dados mais valiosos a partir de dados complexos), alguns passos são realizados, como: **encontrar padrões**, **associações** e **anomalias gerais** nos dados.
+
+
+---
+
+# Mineração de dados
+
+Metodologias da ciência da computação, da estatística multivariada e de outras áreas de conhecimento para realizar seus estudos. 
+
+A mineração de dados é uma das etapas mais importantes da metodologia Knowledge Discovery in Databases (KDD), ou seja, descoberta de conhecimento das bases de dados
+
+A descoberta de conhecimento em bases de dados (KDD) pode ser definida como o processo de extração de informação a partir de dados registrados numa base de dados, um conhecimento implícito, previamente desconhecido, potencialmente útil e compreensível.
+
+---
+
+# Mineração de dados
+
+## Métodos
+
+Etapas:
+
+- definição clara do problema;    
+- a seleção de todas as fontes internas e externas de dados;   
+- e a preparação dos dados, que inclui o pré-processamento, reformatação dos dados;
+- implementação de métodos de análise; e   
+- análise dos resultados obtidos do processo de DM.   
+
+---
+
+# O que é segmentação de mercado?
+
+Segmentação de mercado é o processo de divisão da base de clientes em vários grupos de indivíduos que compartilham uma semelhança de diferentes maneiras que são relevantes para o marketing, tais como sexo, idade, interesses e hábitos de gastos diversos.
+
+
+---
+
+class: middle, inverse
+
+# Atividade 5
+
+---
+
+class: middle
+
+#DÚVIDAS?
+
+**Tarefa da semana** 
+- Projeto integrador 2
+- Atividade 5
+
